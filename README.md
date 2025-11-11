@@ -82,31 +82,7 @@ python main.py
 
 
 
-## 📁 Project Structure# 2. Run the system
 
-
-
-```python main.py## 📁 Project Structure
-
-dinero/
-
-├── venv/                    # Virtual environment``````
-
-├── main.py                  # Main application
-
-├── config.json             # Configurationdinero/
-
-├── requirements.txt         # Dependencies
-
-├── background_videos/       # Background video files## 📦 Virtual Environment├── main.py              # Main script
-
-├── output/                 # Generated videos
-
-└── README.md               # Documentation├── config.json          # API keys
-
-```
-
-This project uses a Python virtual environment for dependency isolation:├── requirements.txt     # Dependencies  
 
 ## ⚙️ Configuration
 
@@ -116,8 +92,8 @@ Edit `config.json`:
 
 ```json```bash└── output/             # Generated videos
 
-{
 
+ 
   "gemini": {# Already created - just activate:```
 
     "api_key": "your-gemini-api-key"
@@ -170,17 +146,13 @@ deactivate- ✅ Automatic subtitles
 
 - **instagrapi**: Instagram API
 
-- **opencv-python**: Computer vision- ✅ **Ultra-Fast Processing**: FFmpeg for 5-10x speed improvement3. Picks random video clip from your background videos
-
-
-
 ## 📝 Credits- ✅ **Smart Video Format**: Auto-crop to vertical (1080x1920)4. Adds subtitles and combines everything
 
 
 
 - **AI**: Google Gemini- ✅ **Dynamic Subtitles**: Fast-changing, mobile-optimized text5. Uploads to Instagram automatically
 
-- **Voice**: Edge-TTS Neural Voices
+- **Voice**: Edge-TTS Neural Voices and ElevenLabs
 
 - **Video**: FFmpeg + MoviePy- ✅ **Multi-Platform Ready**: TikTok, Instagram, YouTube Shorts6. Opens folder for manual upload to YouTube/TikTok
 

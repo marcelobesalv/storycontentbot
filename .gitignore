@@ -31,6 +31,7 @@ client_secret.json
 youtube_token.json
 instagram_session.json
 used_content.json
+videos.txt
 
 # API Keys and Secrets
 *.key
@@ -84,3 +85,4 @@ soundeffects/
 # Session files
 *.session
 *.pickle
+

@@ -1,0 +1,31 @@
+{
+  "gemini": {
+    "api_key": "YOUR_GEMINI_API_KEY_HERE"
+  },
+  "elevenlabs": {
+    "api_key": "YOUR_ELEVENLABS_API_KEY_HERE",
+    "enabled": true
+  },
+  "instagram": {
+    "username": "your_instagram_username",
+    "password": "your_instagram_password",
+    "auto_upload": false
+  },
+  "youtube": {
+    "auto_upload": false
+  },
+  "web_auth": {
+    "enabled": true,
+    "username": "admin",
+    "password_hash": "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918",
+    "comment": "Default password is 'admin123' - CHANGE THIS!"
+  },
+  "video_settings": {
+    "output_path": "output/",
+    "background_video_path": "background_videos",
+    "background_music_path": "background_music"
+  },
+  "upload_settings": {
+    "enable_manual_upload": true
+  }
+}

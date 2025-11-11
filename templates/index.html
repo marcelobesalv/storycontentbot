@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Content Creator Bot - Web Interface</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .main-content {
+            padding: 30px;
+        }
+        
+        .status-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-left: 4px solid #28a745;
+        }
+        
+        .status-card.running {
+            border-left-color: #ffc107;
+            background: #fff3cd;
+        }
+        
+        .status-card.error {
+            border-left-color: #dc3545;
+            background: #f8d7da;
+        }
+        
+        .form-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .log-section {
+            background: #212529;
+            color: #00ff00;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
+            font-family: monospace;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .log-message {
+            margin-bottom: 5px;
+            white-space: pre-wrap;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h1>🎬 Content Creator Bot</h1>
+                    <p>Create amazing videos from any device</p>
+                </div>
+                <div>
+                    <a href="/logout" style="color: white; text-decoration: none; background: rgba(255,255,255,0.2); padding: 10px 20px; border-radius: 20px; transition: background 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">
+                        🚪 Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <!-- Status Section -->
+            <div id="status-card" class="status-card">
+                <h3>🤖 Bot Status: <span id="status">Loading...</span></h3>
+                <p id="progress"></p>
+            </div>
+            
+            <div class="grid-2">
+                <!-- Create Video Form -->
+                <div class="form-section">
+                    <h3>🎥 Create New Video</h3>
+                    <form id="create-form">
+                        <div class="form-group">
+                            <label for="topic">Topic (optional):</label>
+                            <input type="text" id="topic" placeholder="e.g., space, mystery, relationships...">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="content-type">Content Type:</label>
+                            <select id="content-type">
+                                <option value="story">AI Generated Story</option>
+                                <option value="facts">Surprising Facts</option>
+                                <option value="reddit">Reddit Stories</option>
+                            </select>
+                        </div>
+                        
+                        <button type="submit" class="btn" id="create-btn">
+                            <span id="btn-text">🚀 Create Video</span>
+                            <span id="btn-loading" class="loading" style="display: none;"></span>
+                        </button>
+                    </form>
+                </div>
+                
+                <!-- Quick Stats -->
+                <div class="form-section">
+                    <h3>📊 Quick Stats</h3>
+                    <p><strong>Status:</strong> <span id="bot-status">Idle</span></p>
+                    <p><strong>Last Updated:</strong> <span id="last-update">Never</span></p>
+                </div>
+            </div>
+            
+            <!-- Live Log -->
+            <div class="log-section">
+                <h4>📝 Live Activity Log</h4>
+                <div id="log-container">
+                    <div class="log-message">🌐 Web interface connected. Ready to create content!</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Socket.IO connection
+        const socket = io();
+        
+        // DOM elements
+        const statusCard = document.getElementById('status-card');
+        const statusText = document.getElementById('status');
+        const progressText = document.getElementById('progress');
+        const createForm = document.getElementById('create-form');
+        const createBtn = document.getElementById('create-btn');
+        const btnText = document.getElementById('btn-text');
+        const btnLoading = document.getElementById('btn-loading');
+        const logContainer = document.getElementById('log-container');
+        const botStatus = document.getElementById('bot-status');
+        const lastUpdate = document.getElementById('last-update');
+        
+        // Socket events
+        socket.on('connect', function() {
+            console.log('Connected to server');
+            loadStatus();
+        });
+        
+        socket.on('status_update', function(data) {
+            updateStatus(data.status, data.progress);
+        });
+        
+        socket.on('log_message', function(data) {
+            addLogMessage(data.message);
+        });
+        
+        // Form submission
+        createForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const topic = document.getElementById('topic').value;
+            const contentType = document.getElementById('content-type').value;
+            
+            fetch('/api/create_video', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    topic: topic,
+                    content_type: contentType
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert('Error: ' + data.error);
+                } else {
+                    addLogMessage('🎬 Video creation started: ' + (topic || 'Random topic'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to start video creation');
+            });
+        });
+        
+        // Functions
+        function updateStatus(status, progress) {
+            statusText.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+            progressText.textContent = progress || '';
+            botStatus.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+            lastUpdate.textContent = new Date().toLocaleTimeString();
+            
+            // Update status card styling
+            statusCard.className = 'status-card ' + status;
+            
+            // Update button state
+            if (status === 'running') {
+                createBtn.disabled = true;
+                btnText.style.display = 'none';
+                btnLoading.style.display = 'inline-block';
+            } else {
+                createBtn.disabled = false;
+                btnText.style.display = 'inline';
+                btnLoading.style.display = 'none';
+            }
+            
+
+        }
+        
+        function addLogMessage(message) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'log-message';
+            messageDiv.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logContainer.appendChild(messageDiv);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+        
+        function loadStatus() {
+            fetch('/api/status')
+                .then(response => response.json())
+                .then(data => {
+                    updateStatus(data.status, data.progress);
+                    videoCount.textContent = data.video_count;
+                })
+                .catch(error => console.error('Error loading status:', error));
+        }
+        
+
+        
+        // Auto-refresh every 30 seconds
+        setInterval(loadStatus, 30000);
+    </script>
+</body>
+</html>

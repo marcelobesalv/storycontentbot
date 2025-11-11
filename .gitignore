@@ -1,0 +1,86 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+venv/
+venv_py311/
+env/
+ENV/
+
+# Sensitive files - DO NOT COMMIT
+config.json
+client_secret.json
+youtube_token.json
+instagram_session.json
+used_content.json
+
+# API Keys and Secrets
+*.key
+*.pem
+*.env
+.env
+
+# Output files
+output/
+*.mp4
+*.mp3
+*.wav
+*.png
+*.jpg
+*.jpeg
+*.srt
+*.ass
+
+# Temporary files
+temp/
+tmp/
+*.tmp
+*.temp
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Ngrok
+ngrok.yml
+ngrok.log
+
+# FFmpeg binaries (too large)
+ffmpeg.exe
+ffprobe.exe
+
+# Background content (too large)
+background_videos/
+background_music/
+soundeffects/
+
+# Session files
+*.session
+*.pickle
